@@ -51,31 +51,47 @@ def recover_factors(N):
     
     N_len = len(N_bin)
     if N_len != 2048:
-        raise ValueError("N no es un número de 2048b bits")
+        raise ValueError("N no es un número de 2048 bits")
 
-    mid = N_len // 2
-    m1 = int(N_bin[:mid], 2)  # Primera mitad (2rs)
-    m2 = int(N_bin[mid:], 2)  # Segunda mitad (r^2 + s^2)
+    split_14 = N_len // 4
+    split_24 = 2*N_len // 4
+    split_34 = 3*N_len // 4
     
-    print(sqrt(m2**2-m1))
-    r = sqrt(m2 + sqrt(m2**2-m1)//2)
-    s = m1//2*r
-    
-    print(r)
-    print()
-    print(s)
-    print()
+    rs_l = N_bin[:split_14]  # Mitad izquierda de rs
+    rs_r = N_bin[split_34:]  # Segunda mitad rs
 
+    rs_l = rs_l[:-2] + '01' # quitamos el carry
+
+    rs = int(rs_l+rs_r, 2) # reconstruimos rs
+    
+    # ahora que tenemos rs podemos buscar r**2+s**2
+    mid = "10" + N_bin[split_14:split_34]
+    aux = int(rs_r+rs_l, 2)
+
+    r2_s2 = int(mid, 2) - aux
+    
+    # ahora que tenemos r*s i r**2+s**2 podemos 
+    # resolver el sistema para r i s
+    k, m = rs, r2_s2
+    
+    r = sqrt((m+sqrt(m**2-4*k**2))//2)
+    s = rs // r
+    
     # reconstruir p i q
+    # concatenar
+    r = bin(r)[2:]
+    s = bin(s)[2:]
     p = r + s
     q = s + r
-    
-    # comprovar que p i qu son correctos 
+    p = int(p, 2)
+    q = int(q, 2)
+
+    # comprovar que p i q son correctos 
     if p * q == N:
         return p, q
     else:
-        print("p i q incorrectos")
-        return None, None
+        print("p, q INCORRECTOS!!!")
+    return None, None
 
 if __name__=="__main__":
     
@@ -85,8 +101,8 @@ if __name__=="__main__":
 
     p, q = recover_factors(N=n)
 
-    # export_privkey(p, q, n, e)
+    export_privkey(p, q, n, e)
 
     # Para descifrad:
     # 1. openssl pkeyutl -decrypt -inkey private_key.pem -in sergi.guimera_RSA_pseudo.enc -out AES_key.txt
-    # 2. openssl enc -d -aes-128-cbc -pbkdf2 -kfile AES_key.txt -in sergi.guimera_AES_pseudo.enc -out decrypted_file.txt
+    # 2. openssl enc -d -aes-128-cbc -pbkdf2 -kfile AES_key.txt -in sergi.guimera_AES_pseudo.enc -out decrypted_file.tiff
