@@ -1,8 +1,16 @@
 # Sergi GR
 import random
-from math import pow
+from math import pow, gcd
 import hashlib
 import sympy as sp
+from sympy import gcdex, mod_inverse
+
+
+"""
+Map de noms:
+publicExponent e
+modulus n
+"""
 
 class rsa_key:
     def __init__(self,bits_modulo=2048,e=2**16+1):
@@ -14,11 +22,14 @@ class rsa_key:
         self.privateExponent = None
         self.modulus = None
         self.primeP, self.primeQ = self.__find_primes()
-        self.privateExponentModulusPhiP = self.privateExponent % (self.primeP - 1)
-        self.privateExponentModulusPhiQ = self.privateExponent % (self.primeQ - 1)
-        self.inverseQModulusP = self.primeQ**(-1) % self.primeP
+        self.privateExponentModulusPhiP = None
+        self.privateExponentModulusPhiQ = None
+        self.inverseQModulusP = self.inverseModulus(self.primeQ, self.primeP)
 
         self.modulus = self.primeP * self.primeQ
+        self.privateExponent = mod_inverse(self.publicExponent, )
+        self.privateExponentModulusPhiP = self.privateExponent % (self.primeP - 1)
+        self.privateExponentModulusPhiQ = self.privateExponent % (self.primeQ - 1)
 
         def __find_primes(self):
             """
@@ -26,11 +37,15 @@ class rsa_key:
             tq ...
             """
             p, q = 0, 0
-            while False:
-                p = sp.randprime(2^(self.__modulus_bits//2 - 1), 2^(self.__modulus_bits//2));
+            while not gcd(p, self.publicExponent)==1:
+                p = sp.randprime(2^(self.__modulus_bits//2 - 1), 2^(self.__modulus_bits//2))
+
                 # check p
-                q = sp.randprime(2^(self.__modulus_bits//2 - 1), 2^(self.__modulus_bits//2));
-                # check q 
+            while False:
+                q = sp.randprime(2^(self.__modulus_bits//2 - 1), 2^(self.__modulus_bits//2))
+                # check q
+                gcd(e, ) 
+            
             return p, q
 
         def __repr__(self):
@@ -78,7 +93,7 @@ class transaction:
         """
         genera una transaccion firmando "message" con la clave "RSAkey"
         """
-        self.__RSAkey = RSAkey
+        # self.__RSAkey = RSAkey
         self.public_key = rsa_public_key(publicExponent=RSAkey.publicExponent, modulus=RSAkey.modulus)
         self.message = message
         self.signature = RSAkey.sign(message)
@@ -134,7 +149,7 @@ class block:
         """
         genera un bloque válido seguiente al actual con la transacción "transaction"
         """
-        block(transaction, previous_block_hash=self.block_hash)
+        return block(transaction, previous_block_hash=self.block_hash)
 
     def verify_block(self):
         """
@@ -152,7 +167,7 @@ class block:
         return False
     
     def __verify_transaction(self):
-        return False
+        return self.transaction.verify()
     
     def __verify_previous_hash(self):
         return False
@@ -161,9 +176,10 @@ class block_chain:
     def __init__(self, transaction=0):
         """
         genera una cadena de bloques que es una lista de bloques,
-        el primer bloque es un bloque "genesis" generado amb la transacción "transaction"
+        el primer bloque es un bloque "genesis" generado con la transacción "transaction"
         """
         self.list_of_blocks = []
+        self.list_of_blocks.append()
 
     def __repr__(self):
         return str(self.__dict__)
@@ -172,6 +188,9 @@ class block_chain:
         """
         añade a la cadena un nuevo bloque válido generado con la transacción "transaction"
         """
+        last_block = self.list_of_blocks[-1]
+        new_block = last_block.next_block(transaction)
+        self.list_of_blocks.append(new_block)
     def verify(self):
         """
         verifica si la cadena de bloques es válida:
@@ -182,6 +201,14 @@ class block_chain:
         en cualquier otro caso, el booleano False y un entero
         correspondiente al último bloque válido
         """
+        self.list_of_blocks[0]
+        for i in range(1, len(self.list_of_blocks)):
+            block_i = self.list_of_blocks[i]
+            if not block_i.verify_block():
+                return False, i
+            if False:  # 
+                return False, i
+        return True
 
 """
 TODO:
@@ -197,13 +224,15 @@ TODO:
 Ron was wrong, Whit was right
 RESUM:
     -weak keys
-    -
+    -llaves iguales para distintas personas
+    -primos iguales para distintas personas
 
 """
 
 """
 Pseudo
 RESUM:
-    -
+    -Calcular r+s; r*s, sistema =p =s
+    -Provar d=0,1,2
 
 """
