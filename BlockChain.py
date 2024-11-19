@@ -38,11 +38,11 @@ class rsa_key:
             """
             p, q = 0, 0
             while not gcd(p, self.publicExponent)==1:
-                p = sp.randprime(2^(self.__modulus_bits//2 - 1), 2^(self.__modulus_bits//2))
+                p = sp.randprime(2**(self.__modulus_bits//2 - 1), 2**(self.__modulus_bits//2)-1)
 
                 # check p
             while False:
-                q = sp.randprime(2^(self.__modulus_bits//2 - 1), 2^(self.__modulus_bits//2))
+                q = sp.randprime(2**(self.__modulus_bits//2 - 1), 2**(self.__modulus_bits//2)-1)
                 # check q
                 gcd(e, ) 
             
@@ -216,23 +216,4 @@ TODO:
     -Passar expresions (-1, **,...) a versió correcta (pow(), ...)
     -Acabar RSA
     -Debug RSA
-    -RW
-    -Pseudo
-"""
-
-"""
-Ron was wrong, Whit was right
-RESUM:
-    -weak keys
-    -llaves iguales para distintas personas
-    -primos iguales para distintas personas
-
-"""
-
-"""
-Pseudo
-RESUM:
-    -Calcular r+s; r*s, sistema =p =s
-    -Provar d=0,1,2
-
 """
