@@ -3,7 +3,7 @@ import random
 from math import gcd
 import hashlib
 import sympy as sp
-
+random.seed(373)
 
 class rsa_key:
     def __init__(self,bits_modulo=2048,e=2**16+1):
@@ -69,10 +69,10 @@ class rsa_key:
         """
         Salida: un entero que es la firma de "message" hecha con la clave RSA usando el TCR
         """
-        Mp = pow(message, self.privateExponentModulusPhiP, self.primeP)
-        Mq = pow(message, self.privateExponentModulusPhiQ, self.primeQ)
-        h = (self.inverseQModulusP * (Mp - Mq)) % self.primeP
-        m = (Mq + h * self.primeQ) % self.modulus
+        Fp = pow(message, self.privateExponentModulusPhiP, self.primeP)
+        Fq = pow(message, self.privateExponentModulusPhiQ, self.primeQ)
+        h = (self.inverseQModulusP * (Fp - Fq)) % self.primeP
+        m = (Fq + h * self.primeQ) % self.modulus
         return m
 
     def sign_slow(self,message):
@@ -100,7 +100,7 @@ class rsa_public_key:
         el booleano False en cualquier otro caso.
         """
         # return signature**self.publicExponent == message % self.modulus
-        return pow(signature, self.publicExponent, self.modulus) == message
+        return pow(signature, self.publicExponent, self.modulus) == message % self.modulus
 
 
 class transaction:
@@ -149,14 +149,15 @@ class block:
         self.transaction = None # transaction(message=, RSAkey=)
         self.seed = random.randint(0, 2**256 -1)
 
-    def __f_hash(self):
+    def _f_hash(self):
         entrada=str(self.previous_block_hash)
         entrada=entrada+str(transaction.public_key.publicExponent)
         entrada=entrada+str(transaction.public_key.modulus)
         entrada=entrada+str(transaction.message)
         entrada=entrada+str(transaction.signature)
         entrada=entrada+str(self.seed)
-        self.block_hash=int(hashlib.sha256(entrada.encode()).hexdigest(),16)
+        h = int(hashlib.sha256(entrada.encode()).hexdigest(),16)
+        return h
         
     def __repr__(self):
         return str(self.__dict__)
@@ -170,15 +171,20 @@ class block:
         """
         self.previous_block_hash = 0
         self.transaction = transaction
-        self.block_hash = self.__f_hash()
+        self.block_hash = self._f_hash()
 
     def next_block(self, transaction):
         """
         genera un bloque válido seguiente al actual con la transacción "transaction"
         """
         b = block()
-        self.transaction = transaction
-        return 
+        b.transaction = transaction
+        b.previous_block_hash = self.block_hash
+        b.block_hash = b._f_hash()
+        while not (b.block_hash < (2**(256-16))):
+            b.seed = random.randint(0, 2**256 -1)
+            b.block_hash = b._f_hash()
+        return b
 
     def verify_block(self):
         """
@@ -189,17 +195,17 @@ class block:
         Salida: el booleano True si todas las comprobaciones son correctas;
         el booleano False en cualquier otro caso.
         """
-        return self.__verify_hash() and self.__verify_transaction() and self.__verify_previous_hash()
+        return self.__verify_previous_hash() and self.__verify_transaction() and self.__verify_hash()
     
 
     def __verify_hash(self):
-        return False
+        return self._f_hash() == self.block_hash and self.block_hash < (2**(256-16))
     
     def __verify_transaction(self):
         return self.transaction.verify()
     
     def __verify_previous_hash(self):
-        return False
+        return self.previous_block_hash < (2**(256-16))
     
     def from_dictionary(self, bloque):
         """
@@ -257,7 +263,9 @@ class block_chain:
         correspondiente al último bloque válido
         """
         # Comprovar que el primer bloque es un bloque "genesis"
-        self.list_of_blocks[0]
+        block_i = self.list_of_blocks[0]
+        if block_i.previous_block_hash != 0 and block_i.verify_block:
+            return False, 0
 
         # Comprovar que todos los bloques son válidos
         # Comprovar que para cada bloque de la cadena el siguiente es correcto
@@ -265,8 +273,11 @@ class block_chain:
             block_i = self.list_of_blocks[i]
             if not block_i.verify_block(): # bloques válidos
                 return False, i
-            if False:  # siguiente bloque ...
-                return False, i
+            
+            if i<len(self.list_of_blocks)-1:  # siguiente bloque ...
+                block_j = self.list_of_blocks[i+1]
+                if block_i.block_hash == block_j.previous_block_hash:
+                    return False, i+1
         return True
     
     def from_dictionary(self, lista_de_bloques):
@@ -306,10 +317,14 @@ TODO:
 """
 """
 QUESTIONS:
-    - phi(n) ?= (p-1)(q-1)
-    - mcm?
-    - comprovar?: (e*d) % phi(n) == 1
-    - block_chain: verify: i-1? / i per genesis?
+    RSA:
+        - phi(n) ?= (p-1)(q-1)
+        - mcm?
+        - comprovar?: (e*d) % phi(n) == 1
+    block:
+        - generar block_hash iterant fins que h < 2**(256-d)
+    block_chain: 
+        - verify: i-1? / i per genesis?
 """
 if __name__=="__main__":
     pass
