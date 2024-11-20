@@ -189,10 +189,10 @@ class block:
         Salida: el booleano True si todas las comprobaciones son correctas;
         el booleano False en cualquier otro caso.
         """
-        return self.__verify_previous_hash() and self.__verify_transaction() and self.__verify_previous_hash()
+        return self.__verify_hash() and self.__verify_transaction() and self.__verify_previous_hash()
     
 
-    def __verify_previous_hash(self):
+    def __verify_hash(self):
         return False
     
     def __verify_transaction(self):
@@ -229,7 +229,11 @@ class block_chain:
         el primer bloque es un bloque "genesis" generado con la transacción "transaction"
         """
         self.list_of_blocks = []
-        self.list_of_blocks.append() # primer bloque es genesis
+        
+        # primer bloque es genesis
+        b = block()
+        b.genesis(transaction=transaction)
+        self.list_of_blocks.append(b) 
 
     def __repr__(self):
         return str(self.__dict__)
@@ -241,6 +245,7 @@ class block_chain:
         last_block = self.list_of_blocks[-1]
         new_block = last_block.next_block(transaction)
         self.list_of_blocks.append(new_block)
+
     def verify(self):
         """
         verifica si la cadena de bloques es válida:
@@ -251,12 +256,16 @@ class block_chain:
         en cualquier otro caso, el booleano False y un entero
         correspondiente al último bloque válido
         """
+        # Comprovar que el primer bloque es un bloque "genesis"
         self.list_of_blocks[0]
+
+        # Comprovar que todos los bloques son válidos
+        # Comprovar que para cada bloque de la cadena el siguiente es correcto
         for i in range(1, len(self.list_of_blocks)):
             block_i = self.list_of_blocks[i]
-            if not block_i.verify_block():
+            if not block_i.verify_block(): # bloques válidos
                 return False, i
-            if False:  # 
+            if False:  # siguiente bloque ...
                 return False, i
         return True
     
@@ -300,6 +309,7 @@ QUESTIONS:
     - phi(n) ?= (p-1)(q-1)
     - mcm?
     - comprovar?: (e*d) % phi(n) == 1
+    - block_chain: verify: i-1? / i per genesis?
 """
 if __name__=="__main__":
     pass
