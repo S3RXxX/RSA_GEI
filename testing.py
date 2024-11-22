@@ -39,29 +39,11 @@ def check_gcd_exp(k=20, bitsN=2048):
 
     return c
 
-def check_mod_inverse():
-    for _ in range(15):
-        rsa = rsa_key()
-        b = int(sp.gcdex(rsa.publicExponent, rsa._phi_n)[0]%rsa.modulus)==rsa.privateExponent
-        print(b)
-        print(sp.gcdex(rsa.publicExponent, rsa._phi_n)[1]%rsa.modulus)
-        print(sp.gcdex(rsa.publicExponent, rsa._phi_n)[2]%rsa.modulus)
-        if not b:
-            print("Checking:")
-            # print(sp.gcdex(rsa.publicExponent, rsa._phi_n)[0]%rsa.modulus)
-            # print(rsa.privateExponent)
-            # print(sp.gcdex(rsa.publicExponent, rsa._phi_n)[0]%rsa.modulus-rsa.privateExponent)
-            # print(sp.gcd(rsa.publicExponent, rsa._phi_n) == 1)
-            # print(sp.gcd(rsa.primeP, rsa.publicExponent) == 1)
-            # print(sp.gcd(rsa.primeQ, rsa.publicExponent) == 1)
-
-            print()
-
 if __name__=="__main__":
     cs = 0
     # cs += check_primes_length()
     # cs += check_gcd_primes()
     # cs += check_gcd_exp()
+    # print(f"Total number of ERRORS={cs}!!!")
+
     
-    # check_mod_inverse() # <-- descobrir per que inverse_mod != gcdex[0]
-    print(f"Total number of ERRORS={cs}!!!")

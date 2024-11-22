@@ -23,8 +23,6 @@ class rsa_key:
         self.modulus = self.primeP * self.primeQ # calculamos n
         self.privateExponent = sp.mod_inverse(self.publicExponent, self._phi_n) # calculamos d
 
-        # print((self.publicExponent*self.privateExponent) % self._phi_n == 1)
-
         self.privateExponentModulusPhiP = self.privateExponent % (self.primeP - 1)
         self.privateExponentModulusPhiQ = self.privateExponent % (self.primeQ - 1)
         self.inverseQModulusP = sp.mod_inverse(self.primeQ, self.primeP)
@@ -36,6 +34,7 @@ class rsa_key:
         """
         lim_inf, lim_sup = 2**(self.__modulus_bits//2 - 1), 2**(self.__modulus_bits//2)-1
         
+        # doble do while dentro de do while :(
         p = sp.randprime(lim_inf, lim_sup)
         while gcd(p, self.publicExponent)!=1:
             p = sp.randprime(lim_inf, lim_sup)
@@ -311,6 +310,7 @@ class block_chain:
 
 """
 TODO:
+    -Utilitzar clau RSA exemple per investigar pih(n)/MCM/...
     -Acabar RSA
     -Debug RSA
     -BlockChain
@@ -318,9 +318,7 @@ TODO:
 """
 QUESTIONS:
     RSA:
-        - phi(n) ?= (p-1)(q-1)
-        - mcm?
-        - comprovar?: (e*d) % phi(n) == 1
+        
     block:
         - generar block_hash iterant fins que h < 2**(256-d)
     block_chain: 
