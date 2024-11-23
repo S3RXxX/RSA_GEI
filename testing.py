@@ -19,11 +19,11 @@ def check_gcd_primes(k=20, bitsN=2048):
     c = 0
     for _ in range(k):
         rsa = rsa_key(bits_modulo=bitsN)
-        if sp.gcd(rsa.primeP, rsa.publicExponent) != 1:
+        if sp.gcd(rsa.primeP-1, rsa.publicExponent) != 1:
             print("INCORRECT p (gcd != 1)")
             c+=1
 
-        if sp.gcd(rsa.primeQ, rsa.publicExponent) != 1:
+        if sp.gcd(rsa.primeQ-1, rsa.publicExponent) != 1:
             print("INCORRECT q (gcd != 1)")
             c+=1
     return c
