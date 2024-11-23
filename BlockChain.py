@@ -37,7 +37,7 @@ class rsa_key:
         """
         lim_inf, lim_sup = 2**(bits_modulo//2 - 1), 2**(bits_modulo//2)-1
         
-        # doble do while dentro de do while :(
+        
         p = sp.randprime(lim_inf, lim_sup)
         while gcd(p-1, self.publicExponent)!=1:
             p = sp.randprime(lim_inf, lim_sup)
@@ -48,7 +48,7 @@ class rsa_key:
 
         phi_n = (p-1)*(q-1) # calculamos phi(n)
         
-        while sp.gcd(self.publicExponent, phi_n) != 1:
+        """while sp.gcd(self.publicExponent, phi_n) != 1:
             
             # do while para generar primos p tq gcd(p, e) = 1
             p = sp.randprime(lim_inf, lim_sup)
@@ -59,7 +59,7 @@ class rsa_key:
             while gcd(q-1, self.publicExponent)!=1 or p==q:
                 q = sp.randprime(lim_inf, lim_sup)
 
-            phi_n = (p-1)*(q-1) # calculamos phi(n)
+            phi_n = (p-1)*(q-1) # calculamos phi(n)"""
             
         
         return p, q, phi_n
