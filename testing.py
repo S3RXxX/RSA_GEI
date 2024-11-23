@@ -52,14 +52,14 @@ def check_given_key():
     
 
     rsa = rsa_key(e=k['publicExponent'])
-    c += rsa.publicExponent == k['publicExponent']
-    c += rsa.privateExponent == k['privateExponent']
-    c += rsa.modulus == k['modulus']
-    c += rsa.primeP == k['primeP']
-    c += rsa.primeQ == k['primeQ']
-    c += rsa.privateExponentModulusPhiP == k ['privateExponentModulusPhiP']
-    c += rsa.privateExponentModulusPhiQ == k['privateExponentModulusPhiQ']
-    c += rsa.inverseQModulusP == k['inverseQModulusP']
+    c += rsa.publicExponent != k['publicExponent']
+    c += rsa.privateExponent != k['privateExponent']
+    c += rsa.modulus != k['modulus']
+    c += rsa.primeP != k['primeP']
+    c += rsa.primeQ != k['primeQ']
+    c += rsa.privateExponentModulusPhiP != k ['privateExponentModulusPhiP']
+    c += rsa.privateExponentModulusPhiQ != k['privateExponentModulusPhiQ']
+    c += rsa.inverseQModulusP != k['inverseQModulusP']
     return c
 
 if __name__=="__main__":
