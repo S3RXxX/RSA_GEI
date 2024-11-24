@@ -270,7 +270,7 @@ class block_chain:
             
             if i<len(self.list_of_blocks)-1:  # siguiente bloque ...
                 block_j = self.list_of_blocks[i+1]
-                if block_i.block_hash == block_j.previous_block_hash:
+                if block_i.block_hash != block_j.previous_block_hash:
                     return False, i+1
         return True
     
