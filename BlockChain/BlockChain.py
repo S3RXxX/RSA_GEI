@@ -96,9 +96,13 @@ class transaction:
         """
         genera una transaccion firmando "message" con la clave "RSAkey"
         """
-        self.public_key = rsa_public_key(publicExponent=RSAkey.publicExponent, modulus=RSAkey.modulus)
-        self.message = message
-        self.signature = RSAkey.sign(message)
+        self.public_key = None
+        self.message = None
+        self.signature = None
+        if RSAkey != 0:
+            self.public_key = rsa_public_key(publicExponent=RSAkey.publicExponent, modulus=RSAkey.modulus)
+            self.message = message
+            self.signature = RSAkey.sign(message)
 
     def __repr__(self):
         return str(self.__dict__)
@@ -139,10 +143,10 @@ class block:
 
     def _f_hash(self):
         entrada=str(self.previous_block_hash)
-        entrada=entrada+str(transaction.public_key.publicExponent)
-        entrada=entrada+str(transaction.public_key.modulus)
-        entrada=entrada+str(transaction.message)
-        entrada=entrada+str(transaction.signature)
+        entrada=entrada+str(self.transaction.public_key.publicExponent)
+        entrada=entrada+str(self.transaction.public_key.modulus)
+        entrada=entrada+str(self.transaction.message)
+        entrada=entrada+str(self.transaction.signature)
         entrada=entrada+str(self.seed)
         h = int(hashlib.sha256(entrada.encode()).hexdigest(),16)
         return h
@@ -224,10 +228,6 @@ class block_chain:
         """
         self.list_of_blocks = []
         
-        # primer bloque es genesis
-        b = block()
-        b.genesis(transaction=transaction)
-        self.list_of_blocks.append(b) 
 
     def __repr__(self):
         return str(self.__dict__)
@@ -236,9 +236,15 @@ class block_chain:
         """
         añade a la cadena un nuevo bloque válido generado con la transacción "transaction"
         """
-        last_block = self.list_of_blocks[-1]
-        new_block = last_block.next_block(transaction)
-        self.list_of_blocks.append(new_block)
+        if len(self.list_of_blocks) == 0:
+            # primer bloque es genesis
+            b = block()
+            b.genesis(transaction=transaction)
+            self.list_of_blocks.append(b) 
+        else:
+            last_block = self.list_of_blocks[-1]
+            new_block = last_block.next_block(transaction)
+            self.list_of_blocks.append(new_block)
 
     def verify(self):
         """
