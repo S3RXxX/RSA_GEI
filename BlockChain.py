@@ -31,6 +31,12 @@ class rsa_key:
         self.privateExponentModulusPhiQ = self.privateExponent % (self.primeQ - 1)
         self.inverseQModulusP = sp.mod_inverse(self.primeQ, self.primeP)
 
+    def __generate_prime(self, lim_inf, lim_sup):
+        while True:
+            p = sp.randprime(lim_inf, lim_sup)
+            if gcd(p-1, self.publicExponent) == 1:
+                return p
+
     def __find_primes(self, bits_modulo):
         """
         encuentra dos números primeros de longitud bits_modulo/2
@@ -38,15 +44,10 @@ class rsa_key:
         """
         lim_inf, lim_sup = 2**(bits_modulo//2 - 1), 2**(bits_modulo//2)-1
         
-        
-        p = sp.randprime(lim_inf, lim_sup)
-        while gcd(p-1, self.publicExponent)!=1:
-            p = sp.randprime(lim_inf, lim_sup)
-
-        q = sp.randprime(lim_inf, lim_sup)
-        while gcd(q-1, self.publicExponent)!=1 or p==q:
-            q = sp.randprime(lim_inf, lim_sup)            
-        
+        p = self.__generate_prime(lim_inf, lim_sup)
+        q = self.__generate_prime(lim_inf, lim_sup)
+        while p == q:
+            q = self.__generate_prime(lim_inf, lim_sup, self.publicExponent)          
         return p, q
     
     def __repr__(self):
