@@ -164,6 +164,9 @@ class block:
         self.previous_block_hash = 0
         self.transaction = transaction
         self.block_hash = self._f_hash()
+        while not (self.block_hash < 2**(256-16)):
+            self.seed = random.randint(0, 2**256 -1)
+            self.block_hash = self._f_hash()
 
     def next_block(self, transaction):
         """
@@ -187,7 +190,11 @@ class block:
         Salida: el booleano True si todas las comprobaciones son correctas;
         el booleano False en cualquier otro caso.
         """
-        return self.__verify_previous_hash() and self.__verify_transaction() and self.__verify_hash()
+        valid_previous_hash = self.__verify_previous_hash()
+        valid_transaction = self.__verify_transaction()
+        valid_hash = self.__verify_hash()
+        # print(valid_previous_hash, valid_transaction, valid_hash)
+        return valid_previous_hash and valid_transaction and valid_hash
     
 
     def __verify_hash(self):
