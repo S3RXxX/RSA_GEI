@@ -5,6 +5,7 @@ import hashlib
 import sympy as sp
 random.seed(373)
 
+
 class rsa_key:
     def __init__(self,bits_modulo=2048,e=2**16+1):
         """

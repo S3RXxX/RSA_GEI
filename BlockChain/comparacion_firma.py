@@ -5,6 +5,8 @@ import random
 import pandas as pd
 import matplotlib.pyplot as plt
 
+random.seed(373)
+
 def plot_table(results_sf, results_ss, n_bits, filename="comparison_plot.png"):
     """
     Genera un gráfico comparativo entre los tiempos de firma rápida y firma lenta.
@@ -33,8 +35,9 @@ def plot_table(results_sf, results_ss, n_bits, filename="comparison_plot.png"):
 def create_data(n_bits, messages):
     results_sf = {n:0 for n in n_bits}
     results_ss = {n:0 for n in n_bits}
-    for m in messages:
-        for n in n_bits:
+    
+    for i, n in enumerate(n_bits):
+        for m in messages[i]:
             rsa = rsa_key(bits_modulo=n)
             
             start_sf = time.time()
@@ -61,7 +64,7 @@ def create_data(n_bits, messages):
 if __name__=="__main__":
     # 512, 1024, 2048 y 4096
     n_bits = [512, 1024, 2048, 4096]
-    messages = [0, 2**500+2**320+2**33]
+    messages = [[random.randint(2**(n-1), 2**n - 1) for _ in range(10)] for n in n_bits]  # generated via random
     results_sf, results_ss = create_data(n_bits, messages)
     plot_table(results_sf, results_ss, n_bits)
     
