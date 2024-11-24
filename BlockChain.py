@@ -19,9 +19,10 @@ class rsa_key:
         self.privateExponentModulusPhiQ = None
         self.inverseQModulusP = None
 
-        # self.primeP, self.primeQ, phi_n = self.__find_primes() # encontramos primos que cumplan la condición
+        # self.primeP, self.primeQ = self.__find_primes() # encontramos primos que cumplan la condición
         self.primeP = 122629444073337667422288395292747376078431521997963012647017230705351035693209280755283762011755752715965886577100243618468820765156020804178211084797231413395283188043777362701314241392526204189025110121049563468405271444810624609103224366716895992324987016142779698128622499895335814753728169592097262509267
         self.primeQ = 135022482695552993658424782390678883334397291006283278852189794362199669145137513071818322620937928041228463603663066857177212046315180430582170988930698522917762682230953758477423854322810560098657253135923468209830521295403163796102267150685737633469310559616732491747179540792707300208586833198877353291909
+        
         phi_n = (self.primeP - 1) * (self.primeQ - 1)
         self.modulus = self.primeP * self.primeQ # calculamos n
         self.privateExponent = sp.mod_inverse(self.publicExponent, phi_n) # calculamos d
@@ -44,25 +45,9 @@ class rsa_key:
 
         q = sp.randprime(lim_inf, lim_sup)
         while gcd(q-1, self.publicExponent)!=1 or p==q:
-            q = sp.randprime(lim_inf, lim_sup)
-
-        phi_n = (p-1)*(q-1) # calculamos phi(n)
+            q = sp.randprime(lim_inf, lim_sup)            
         
-        """while sp.gcd(self.publicExponent, phi_n) != 1:
-            
-            # do while para generar primos p tq gcd(p, e) = 1
-            p = sp.randprime(lim_inf, lim_sup)
-            while gcd(p-1, self.publicExponent)!=1:
-                p = sp.randprime(lim_inf, lim_sup)
-
-            q = sp.randprime(lim_inf, lim_sup)
-            while gcd(q-1, self.publicExponent)!=1 or p==q:
-                q = sp.randprime(lim_inf, lim_sup)
-
-            phi_n = (p-1)*(q-1) # calculamos phi(n)"""
-            
-        
-        return p, q, phi_n
+        return p, q
     
     def __repr__(self):
         return str(self.__dict__)
