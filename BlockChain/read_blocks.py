@@ -4,7 +4,11 @@ from BlockChain import rsa_key , rsa_public_key, transaction, block, block_chain
 if __name__ == "__main__":
     # created blocks
     # fichero_de_salida = "Blockchain/created_blocks/Cadena_bloques_1.block"
-    fichero_de_salida = "Blockchain/created_blocks/Cadena_bloques_2.block"
+    # fichero_de_salida = "Blockchain/created_blocks/Cadena_bloques_2.block"
+    # fichero_de_salida = "Blockchain/created_blocks/Cadena_bloques_X_block_hash.block"
+    # fichero_de_salida = "Blockchain/created_blocks/Cadena_bloques_X_previous_block_hash.block"
+    # fichero_de_salida = "Blockchain/created_blocks/Cadena_bloques_X_seed.block"
+    fichero_de_salida = "Blockchain/created_blocks/Cadena_bloques_X_transaction.block"
     
     # demo files
     # fichero_de_salida = "Blockchain/demo_blocks/Cadena_bloques_valida.block"

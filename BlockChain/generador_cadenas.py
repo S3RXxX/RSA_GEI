@@ -7,7 +7,7 @@ def modify(bc, i=33, modification="block_hash"):
     if modification == "block_hash":
         bc.list_of_blocks[i].block_hash=2**256
     elif modification == "previous_block_hash":
-        bc.list_of_blocks[i].previous_block_hash == 2**256
+        bc.list_of_blocks[i].previous_block_hash = 2**256
     elif modification == "seed":
         seed = bc.list_of_blocks[i].seed 
         if seed == 0:
