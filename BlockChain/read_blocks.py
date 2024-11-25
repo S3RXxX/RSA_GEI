@@ -8,8 +8,9 @@ if __name__ == "__main__":
     # fichero_de_salida = "Blockchain/created_blocks/Cadena_bloques_X_block_hash.block"
     # fichero_de_salida = "Blockchain/created_blocks/Cadena_bloques_X_previous_block_hash.block"
     # fichero_de_salida = "Blockchain/created_blocks/Cadena_bloques_X_seed.block"
-    fichero_de_salida = "Blockchain/created_blocks/Cadena_bloques_X_transaction.block"
-    
+    # fichero_de_salida = "Blockchain/created_blocks/Cadena_bloques_X_transaction.block"
+    fichero_de_salida = "Blockchain/created_blocks/Cadena_bloques_X_.block"
+
     # demo files
     # fichero_de_salida = "Blockchain/demo_blocks/Cadena_bloques_valida.block"
     # fichero_de_salida = "Blockchain/demo_blocks/Cadena_bloques_bloque_falso.block" # 27?
