@@ -63,12 +63,31 @@ def check_given_key():
     print(eval(rsa.__repr__())==k)
     return c
 
+
+def test_mcm(k=20, bitsN=2048):
+    c = 0
+    for _ in range(k):
+        rsa = rsa_key(bits_modulo=bitsN)
+        phi = (rsa.primeP-1)*(rsa.primeQ-1)
+
+        aux0 = sp.mod_inverse(1, rsa.modulus)
+        aux = phi*aux0 # MCM p-1, q-1
+        print(aux0)
+        d = sp.mod_inverse(rsa.publicExponent, aux)
+        print(d==rsa.privateExponent)
+
+    return c
+
+
 if __name__=="__main__":
     cs = 0
+
     cs += check_primes_length()
     cs += check_gcd_primes()
     cs += check_gcd_exp()
-    # cs += check_given_key()
-    print(f"Total number of ERRORS={cs}!!!")
 
+    # cs += check_given_key()
+    # cs += test_mcm()
+
+    print(f"Total number of ERRORS={cs}!!!")
     
