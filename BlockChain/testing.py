@@ -67,14 +67,33 @@ def check_given_key():
 def test_mcm(k=20, bitsN=2048):
     c = 0
     for _ in range(k):
-        rsa = rsa_key(bits_modulo=bitsN)
-        phi = (rsa.primeP-1)*(rsa.primeQ-1)
+        # rsa = rsa_key(bits_modulo=bitsN)
+        # phi = (rsa.primeP-1)*(rsa.primeQ-1)
+        
+        e=3
+        p=sp.randprime(2,1000)
+        while sp.gcd(p-1, e)!=1:
+            p=sp.randprime(2,1000)
 
-        aux0 = sp.mod_inverse(1, rsa.modulus)
-        aux = phi*aux0 # MCM p-1, q-1
-        print(aux0)
-        d = sp.mod_inverse(rsa.publicExponent, aux)
-        print(d==rsa.privateExponent)
+        q=sp.randprime(2,1000)
+        while sp.gcd(q-1, e)!=1:
+            q=sp.randprime(2,1000)
+        
+        n=p*q
+        
+        phi_n=(p-1)*(q-1)
+        from sympy.ntheory import reduced_totient
+        lambda_n = reduced_totient(n)
+        print(sp.mod_inverse(e,phi_n)==sp.mod_inverse(e,lambda_n))
+
+        # mcd = sp.gcd((rsa.primeP-1), (rsa.primeQ-1))
+        # aux = sp.mod_inverse(mcd, rsa.modulus)
+        # mcm = phi*aux # MCM p-1, q-1
+        
+        # print(aux0)
+        # d = sp.mod_inverse(rsa.publicExponent, lambda_n)
+        # print(d==rsa.privateExponent)
+
 
     return c
 
