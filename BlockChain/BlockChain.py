@@ -310,18 +310,3 @@ class block_chain:
             aux.append(bloque)
         self.list_of_blocks = aux
 
-"""
-TODO:
-    -Acabar RSA
-    -Debug RSA
-    -BlockChain
-"""
-"""
-QUESTIONS:
-    RSA:
-        
-    block:
-        - generar block_hash iterant fins que h < 2**(256-d)
-    block_chain: 
-        - verify: i-1? / i per genesis?
-"""

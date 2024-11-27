@@ -37,9 +37,9 @@ def create_data(n_bits, messages):
     results_ss = {n:0 for n in n_bits}
     
     for i, n in enumerate(n_bits):
-        for m in messages[i]:
-            rsa = rsa_key(bits_modulo=n)
-            
+        rsa = rsa_key(bits_modulo=n)
+        print(f"n:{n}!!!")
+        for m in messages: 
             start_sf = time.time()
             f1 = rsa.sign(m)
             sf = time.time() - start_sf
@@ -55,16 +55,16 @@ def create_data(n_bits, messages):
             results_sf[n] += sf
             results_ss[n] += ss
 
-    for n in n_bits:
-        results_sf[n] /= len(messages)
-        results_ss[n] /= len(messages)
+    # for n in n_bits:
+    #     results_sf[n] /= len(messages)
+    #     results_ss[n] /= len(messages)
 
     return results_sf, results_ss
 
 if __name__=="__main__":
     # 512, 1024, 2048 y 4096
     n_bits = [512, 1024, 2048, 4096]
-    messages = [[random.randint(2**(n-1), 2**n - 1) for _ in range(10)] for n in n_bits]  # generated via random
+    messages = [random.randint(2**(4096-1), 2**4096 - 1) for _ in range(100) for n in n_bits]  # generated via random
     results_sf, results_ss = create_data(n_bits, messages)
     plot_table(results_sf, results_ss, n_bits)
     
