@@ -1,0 +1,10 @@
+Si comparamos los tiempos de ejecución de firmar 100 mensajes para distintos tamaños de llave de RSA, obtenemos:
+
+   Bits del Módulo  Tiempo Firma Rápida (s)  Tiempo Firma Lenta (s)  Ratio Mejora
+0              512                 0.112581                0.194843      1.730694
+1             1024                 0.449099                1.107267      2.465531
+2             2048                 2.289186                7.452973      3.255731
+3             4096                14.827417               52.994581      3.574094
+
+Donde se puede ver que la firma rápida (con TCR) es siempre más eficiente que la firma lenta, pero además como más grande es la llave más se nota, ya que, a medida que aumenta el tamaño del módulo (y, por lo tanto, la seguridad), la diferencia en tiempo entre la firma rápida y la lenta se hace más grande. Es decir, el ratio de mejora tiende a aumentar con el tamaño del módulo, lo que indica que la optimización con TCR es especialmente útil en contextos donde se trabaja con módulos grandes y operaciones frecuentes.
+Para los tamaños considerados seguros actualmente, el factor de mejora es 3+.
