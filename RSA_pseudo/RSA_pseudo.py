@@ -2,7 +2,8 @@ import os
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.backends import default_backend
-from sympy import mod_inverse, Integer, sqrt
+from sympy import mod_inverse, Integer, sqrt, simplify, sympify
+from decimal import Decimal, getcontext
 
 # RSA_pseudo
 # Fer operacions matemàtiques amb n per treure p i q
@@ -15,7 +16,7 @@ def read_pubkey(filename):
         public_key = serialization.load_pem_public_key(key_file.read())
     return public_key.public_numbers().n, public_key.public_numbers().e
 
-def export_privkey(p, q, n, e, private_key_file='private_key.pem'):
+def export_privkey(p, q, n, e, private_key_file='sergi.guimera_privkeyRSA_pseudo.pem'):
     
     phi_n = (p - 1) * (q - 1)
     d = mod_inverse(e, phi_n)
@@ -50,47 +51,72 @@ def recover_factors(N):
     N_bin = bin(N)[2:]
     
     N_len = len(N_bin)
-    if N_len != 2048:
-        raise ValueError("N no es un número de 2048 bits")
+    if N_len > 2048:
+        raise ValueError("N no es un número de 2048 bits (tiene más)")
+    
+    # si tiene menos añadimos padding
+    padding = '0'*(2048-N_len)
+    N_len = 2048
+    
+    N_bin = padding + N_bin
 
+    # ahora calculamos por donde son las particiones
     split_14 = N_len // 4
     split_24 = 2*N_len // 4
     split_34 = 3*N_len // 4
-    
-    rs_l = N_bin[:split_14]  # Mitad izquierda de rs
-    rs_r = N_bin[split_34:]  # Segunda mitad rs
+    for d in range(3):  # d = 0,1,2
 
-    rs_l = rs_l[:-2] + '01' # quitamos el carry
+        rs_l = N_bin[:split_14]  # Mitad izquierda de rs
+        rs_r = N_bin[split_34:]  # Segunda mitad rs
+        
+        print(f"Trying d={d}")
+        # rs_l = rs_l[:-2] + '01' # quitamos el carry
+        rs_l = padding + bin(int(rs_l, 2) - d)[2:]  # como es por la derecha podemos restar directamente
+        
+        rs = int(rs_l+rs_r, 2) # reconstruimos rs
+        
+        # ahora que tenemos rs podemos buscar r**2+s**2
+        # mid = int("10" + N_bin[split_14:split_34], 2)
+        mid = int(bin(d)[2:] + N_bin[split_14:split_34], 2)
+        # print(rs_l)
+        aux = int(rs_r+rs_l, 2)
 
-    rs = int(rs_l+rs_r, 2) # reconstruimos rs
-    
-    # ahora que tenemos rs podemos buscar r**2+s**2
-    mid = "10" + N_bin[split_14:split_34]
-    aux = int(rs_r+rs_l, 2)
+        r2_s2 = mid - aux
+        
+        # ahora que tenemos r*s i r**2+s**2 podemos 
+        # resolver el sistema para r i s
+        k, m = rs, r2_s2
 
-    r2_s2 = int(mid, 2) - aux
-    
-    # ahora que tenemos r*s i r**2+s**2 podemos 
-    # resolver el sistema para r i s
-    k, m = rs, r2_s2
-    
-    r = sqrt((m+sqrt(m**2-4*k**2))//2)
-    s = rs // r
-    
-    # reconstruir p i q
-    # concatenar
-    r = bin(r)[2:]
-    s = bin(s)[2:]
-    p = r + s
-    q = s + r
-    p = int(p, 2)
-    q = int(q, 2)
 
-    # comprovar que p i q son correctos 
-    if p * q == N:
-        return p, q
-    else:
-        print("p, q INCORRECTOS!!!")
+        try:
+            insider = m**2-4*k**2
+            inner_sqrt = sqrt(insider)
+            # print(inner_sqrt)       
+            insider2 = m+inner_sqrt
+            r = sqrt(insider2//2)    
+            s = rs // r
+            print(f"Found solution with d={d}")
+            
+        except:
+            continue
+    
+        # # reconstruir p i q (concatenar)
+        # print(r)
+        # print(s)
+        r = bin(r)[2:]
+        s = bin(s)[2:]
+        p = r + s
+        q = s + r
+        p = int(p, 2)
+        q = int(q, 2)
+        
+        # comprovar que p i q son correctos 
+        if p * q == N:
+            print("Correct solution for p and q")
+            return p, q
+        else:
+            print("p, q INCORRECTOS!!!")
+        return None, None
     return None, None
 
 if __name__=="__main__":
@@ -101,8 +127,9 @@ if __name__=="__main__":
 
     p, q = recover_factors(N=n)
 
-    export_privkey(p, q, n, e)
+    if p:
+        export_privkey(p, q, n, e)
 
     # Para descifrad:
-    # 1. openssl pkeyutl -decrypt -inkey private_key.pem -in sergi.guimera_RSA_pseudo.enc -out AES_key.txt
-    # 2. openssl enc -d -aes-128-cbc -pbkdf2 -kfile AES_key.txt -in sergi.guimera_AES_pseudo.enc -out decrypted_file.tiff
+    # 1. openssl pkeyutl -decrypt -inkey sergi.guimera_privkeyRSA_pseudo.pem -in sergi.guimera_RSA_pseudo.enc -out sergi.guimera_RSA_pseudo_AES_key.txt
+    # 2. openssl enc -d -aes-128-cbc -pbkdf2 -kfile sergi.guimera_RSA_pseudo_AES_key.txt -in sergi.guimera_AES_pseudo.enc -out sergi.guimera_RSA_pseudo_decrypted_file.tiff
